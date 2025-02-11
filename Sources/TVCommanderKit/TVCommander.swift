@@ -104,6 +104,18 @@ public class TVCommander: WebSocketDelegate {
         }
         sendCommandOverWebSocket(.createTextInputCommand(text))
     }
+    
+    public func sendMoveCommand(x: Int, y: Int, time: Double) {
+        guard isConnected else {
+            handleError(.remoteCommandNotConnectedToTV)
+            return
+        }
+        guard authStatus == .allowed else {
+            handleError(.remoteCommandAuthenticationStatusNotAllowed)
+            return
+        }
+        sendCommandOverWebSocket(.createMoveCommand(x: x, y: y, time: time))
+    }
 
     private func sendCommandOverWebSocket(_ command: TVRemoteCommand) {
         commandQueue.append(command)

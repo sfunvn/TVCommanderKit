@@ -142,5 +142,6 @@ extension TV {
             type: service.type,
             uri: service.uri
         )
+        self.service = service
     }
 }

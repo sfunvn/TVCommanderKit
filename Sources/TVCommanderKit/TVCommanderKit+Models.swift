@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SmartView
 
 /// Represents a TV discovered in a search
 public struct TV: Codable, Identifiable, Equatable {
@@ -149,6 +150,7 @@ public struct TV: Codable, Identifiable, Equatable {
     /// URI used to query the TV via HTTP
     public let uri: String
     public let version: String?
+    public var service: Service?
 
     public init(
         device: Device? = nil,
@@ -169,6 +171,42 @@ public struct TV: Codable, Identifiable, Equatable {
         self.uri = uri
         self.version = version
     }
+    
+    enum CodingKeys: String, CodingKey {
+        case device
+        case id
+        case isSupport
+        case name
+        case remote
+        case type
+        case uri
+        case version
+    }
+    
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.device, forKey: .device)
+        try container.encode(self.id, forKey: .id)
+        try container.encodeIfPresent(self.isSupport, forKey: .isSupport)
+        try container.encode(self.name, forKey: .name)
+        try container.encodeIfPresent(self.remote, forKey: .remote)
+        try container.encode(self.type, forKey: .type)
+        try container.encode(self.uri, forKey: .uri)
+        try container.encodeIfPresent(self.version, forKey: .version)
+    }
+    
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.device = try container.decodeIfPresent(TV.Device.self, forKey: .device)
+        self.id = try container.decode(String.self, forKey: .id)
+        self.isSupport = try container.decodeIfPresent(String.self, forKey: .isSupport)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.remote = try container.decodeIfPresent(String.self, forKey: .remote)
+        self.type = try container.decode(String.self, forKey: .type)
+        self.uri = try container.decode(String.self, forKey: .uri)
+        self.version = try container.decodeIfPresent(String.self, forKey: .version)
+    }
+    
 }
 
 public enum TVAuthStatus {
@@ -215,6 +253,7 @@ public struct TVRemoteCommand: Encodable {
             case press
             case release
             case textInput(String)
+            case move
 
             public init?(rawValue: String) {
                 nil // Never used
@@ -230,6 +269,8 @@ public struct TVRemoteCommand: Encodable {
                     return "Release"
                 case .textInput(let text):
                     return text
+                case .move:
+                    return "Move"
                 }
             }
         }
@@ -273,6 +314,13 @@ public struct TVRemoteCommand: Encodable {
             case sourceTV = "KEY_DTV"
             case sourceHDMI = "KEY_HDMI"
             case contents = "KEY_CONTENTS"
+            case rewind = "KEY_REWIND"
+            case stop = "KEY_STOP"
+            case play = "KEY_PLAY"
+            case pause = "KEY_PAUSE"
+            case fastForward = "KEY_FF"
+            case record = "KEY_REC"
+            case replay = "fnKEY_QUICK_REPLAY"
             case base64 = "base64" // Used for text input
         }
 
@@ -286,7 +334,11 @@ public struct TVRemoteCommand: Encodable {
         /// Command to be executed, e.g., "Click"
         public let cmd: Command
         /// Specific key data associated with the command
-        public let dataOfCmd: ControlKey
+        public let dataOfCmd: ControlKey?
+        /// Move params
+        public let x: Int?
+        public let y: Int?
+        public let time: Double?
         /// Additional option that may modify the command's execution
         public let option: Bool
         /// Type of the remote control that the command applies to, e.g., "SendRemoteKey"
@@ -299,11 +351,14 @@ public struct TVRemoteCommand: Encodable {
             case typeOfRemote = "TypeOfRemote"
         }
 
-        public init(cmd: Command, dataOfCmd: ControlKey, option: Bool, typeOfRemote: ControlType) {
+        public init(cmd: Command, dataOfCmd: ControlKey?, option: Bool, typeOfRemote: ControlType, x: Int? = nil, y: Int? = nil, time: Double? = nil) {
             self.cmd = cmd
             self.dataOfCmd = dataOfCmd
             self.option = option
             self.typeOfRemote = typeOfRemote
+            self.x = x
+            self.y = y
+            self.time = time
         }
     }
 

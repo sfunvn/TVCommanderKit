@@ -1,6 +1,6 @@
 //
 //  TVCommanderKit+Extensions.swift
-//  
+//
 //
 //  Created by Wilson Desimini on 9/3/23.
 //
@@ -16,11 +16,11 @@ extension Data {
         for _ in 0..<16 { magicPacketRaw.append(contentsOf: macAddressData) }
         return Data(magicPacketRaw)
     }
-
+    
     var asJSON: [String: Any]? {
         try? JSONSerialization.jsonObject(with: self) as? [String: Any]
     }
-
+    
     var asString: String? {
         String(data: self, encoding: .utf8)
     }
@@ -32,7 +32,7 @@ extension Dictionary {
     var asData: Data? {
         try? JSONSerialization.data(withJSONObject: self)
     }
-
+    
     var asString: String? {
         asData?.asString
     }
@@ -52,21 +52,21 @@ extension String {
     var isValidAppName: Bool {
         !isEmpty
     }
-
+    
     var isValidIPAddress: Bool {
         let regex = #"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"#
         let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
         return predicate.evaluate(with: self)
     }
-
+    
     var asBase64: String? {
         asData?.base64EncodedString()
     }
-
+    
     var asData: Data? {
         data(using: .utf8)
     }
-
+    
     var asJSON: [String: Any]? {
         asData.flatMap(\.asJSON)
     }
@@ -85,7 +85,7 @@ extension TV {
         }
         return nil
     }
-
+    
     func addingDevice(_ device: TV.Device) -> TV {
         TV(
             device: device,
@@ -116,39 +116,39 @@ extension TVApp {
             youtube()
         ]
     }
-
+    
     public static func espn() -> TVApp {
         TVApp(id: "3201708014618", name: "ESPN")
     }
-
+    
     public static func hulu() -> TVApp {
         TVApp(id: "3201601007625", name: "Hulu")
     }
-
+    
     public static func max() -> TVApp {
         TVApp(id: "3202301029760", name: "Max")
     }
-
+    
     public static func netflix() -> TVApp {
         TVApp(id: "3201907018807", name: "Netflix")
     }
-
+    
     public static func paramountPlus() -> TVApp {
         TVApp(id: "3201710014981", name: "Paramount +")
     }
-
+    
     public static func plutoTV() -> TVApp {
         TVApp(id: "3201808016802", name: "Pluto TV")
     }
-
+    
     public static func primeVideo() -> TVApp {
         TVApp(id: "3201910019365", name: "Prime Video")
     }
-
+    
     public static func spotify() -> TVApp {
         TVApp(id: "3201606009684", name: "Spotify")
     }
-
+    
     public static func youtube() -> TVApp {
         TVApp(id: "111299001912", name: "YouTube")
     }
@@ -182,7 +182,7 @@ extension TVKeyboardLayout {
             ["z", "x", "c", "v", "b", "n", "m"]
         ]
     }
-
+    
     public static var youtube: Self {
         [
             ["a", "b", "c", "d", "e", "f", "g"],
@@ -207,7 +207,7 @@ extension TVRemoteCommand {
             )
         )
     }
-
+    
     static func createPressCommand(_ key: TVRemoteCommand.Params.ControlKey) -> TVRemoteCommand {
         TVRemoteCommand(
             method: .control,
@@ -219,7 +219,7 @@ extension TVRemoteCommand {
             )
         )
     }
-
+    
     static func createReleaseCommand(_ key: TVRemoteCommand.Params.ControlKey) -> TVRemoteCommand {
         TVRemoteCommand(
             method: .control,
@@ -231,7 +231,7 @@ extension TVRemoteCommand {
             )
         )
     }
-
+    
     static func createTextInputCommand(_ text: String) -> TVRemoteCommand {
         TVRemoteCommand(
             method: .control,
@@ -240,6 +240,19 @@ extension TVRemoteCommand {
                 dataOfCmd: .base64,
                 option: false,
                 typeOfRemote: .inputString
+            )
+        )
+    }
+    
+    static func createMoveCommand(x: Int, y: Int, time: Double) -> TVRemoteCommand {
+        TVRemoteCommand(
+            method: .control,
+            params: .init(
+                cmd: .move,
+                dataOfCmd: nil,
+                option: false,
+                typeOfRemote: .mouseDevice,
+                x: x, y: y, time: time
             )
         )
     }
