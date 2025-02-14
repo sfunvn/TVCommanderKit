@@ -285,6 +285,7 @@ public struct TVRemoteCommand: Encodable {
             case right = "KEY_RIGHT"
             case enter = "KEY_ENTER"
             case returnKey = "KEY_RETURN"
+            case home = "KEY_HOME"
             case channelUp = "KEY_CHUP"
             case channelDown = "KEY_CHDOWN"
             case channelList = "KEY_CH_LIST"
